@@ -1,0 +1,8 @@
+
+[Room Reservation]
+Guest Name: ahra
+Room Number: 103
+Room Capacity: 1 beds
+Price per Night: 1000000.0 Toman
+Nights: 1
+Total Price: 1000000.0 Toman
