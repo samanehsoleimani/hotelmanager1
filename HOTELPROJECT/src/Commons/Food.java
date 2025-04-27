@@ -1,48 +1,30 @@
 package Common;
 
 public class Food {
+
     private String foodName;
     private double foodPrice;
-    private String foodTime; // Breakfast, Lunch, or Dinner
+    private String mealType; // نوع وعده غذایی (Breakfast, Lunch, Dinner)
 
-    // سازنده
-    public Food(String foodName, double foodPrice, String foodTime) {
+    // سازنده برای ایجاد غذا
+    public Food(String foodName, double foodPrice, String mealType) {
         this.foodName = foodName;
         this.foodPrice = foodPrice;
-        this.foodTime = foodTime;
+        this.mealType = mealType;
     }
 
-    // Getter و Setterها
+    // متد برای دریافت نام غذا
     public String getFoodName() {
         return foodName;
     }
 
-    public void setFoodName(String foodName) {
-        this.foodName = foodName;
-    }
-
+    // متد برای دریافت قیمت غذا
     public double getFoodPrice() {
         return foodPrice;
     }
 
-    public void setFoodPrice(double foodPrice) {
-        this.foodPrice = foodPrice;
-    }
-
-    public String getFoodTime() {
-        return foodTime;
-    }
-
-    public void setFoodTime(String foodTime) {
-        this.foodTime = foodTime;
-    }
-
-    @Override
-    public String toString() {
-        return foodName + " - " + foodPrice + " Toman - Time: " + foodTime;
+    // متد برای دریافت نوع وعده غذایی
+    public String getMealType() {
+        return mealType;
     }
 }
-
-
-
-
