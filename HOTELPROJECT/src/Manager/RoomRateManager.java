@@ -2,18 +2,32 @@ package Manager;
 
 import Common.Room;
 import txtFileManager.txtfilemanager;
-import java.util.Scanner;
 
-public class RoomRateManager {
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+
+public class RoomRateManager extends JFrame {
     private Room[] rooms;
-    private Scanner scanner;
     private txtfilemanager fileManager;
 
+    private JTextField nameField;
+    private JComboBox<String> roomComboBox;
+    private JTextField nightsField;
+    private JButton reserveButton;
+    private JTextArea outputArea;
+
     public RoomRateManager() {
-        scanner = new Scanner(System.in);
+        setTitle("🏨 Room Booking");
+        setSize(500, 500);
+        setLocationRelativeTo(null);
+        setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        setLayout(new BorderLayout());
+
         fileManager = new txtfilemanager("ROOMRATE.txt");
 
-        rooms = new Room[] {
+        rooms = new Room[]{
                 new Room(101, 1, 1000000),
                 new Room(102, 1, 1000000),
                 new Room(103, 1, 1000000),
@@ -35,32 +49,75 @@ public class RoomRateManager {
                 new Room(502, 5, 6000000),
                 new Room(503, 5, 6000000)
         };
+
+        initComponents();
     }
 
-    public void startRoomBooking() {
-        System.out.println("🏨 Welcome to Room Booking");
-        System.out.print("Please enter your name: ");
-        String guestName = scanner.nextLine().trim();
+    private void initComponents() {
+        JPanel inputPanel = new JPanel(new GridLayout(4, 2, 10, 10));
 
-        listAllRooms();
+        JLabel nameLabel = new JLabel("👤 Guest Name:");
+        nameField = new JTextField();
 
-        System.out.print("Please enter the room number you want to reserve: ");
-        int selectedRoomNumber = scanner.nextInt();
+        JLabel roomLabel = new JLabel("🏨 Select Room:");
+        roomComboBox = new JComboBox<>();
+        for (Room room : rooms) {
+            roomComboBox.addItem("Room " + room.getRoomNumber() + " | Capacity: " + room.getCapacity() + " beds | " + room.getPricePerNight() + " Toman");
+        }
 
-        Room selectedRoom = getRoomByNumber(selectedRoomNumber);
-        if (selectedRoom == null) {
-            System.out.println("❌ Room not found!");
+        JLabel nightsLabel = new JLabel("🌙 Nights to stay:");
+        nightsField = new JTextField();
+
+        reserveButton = new JButton("✅ Reserve Now");
+
+        inputPanel.add(nameLabel);
+        inputPanel.add(nameField);
+        inputPanel.add(roomLabel);
+        inputPanel.add(roomComboBox);
+        inputPanel.add(nightsLabel);
+        inputPanel.add(nightsField);
+        inputPanel.add(new JLabel()); // خالی برای زیبایی
+        inputPanel.add(reserveButton);
+
+        add(inputPanel, BorderLayout.NORTH);
+
+        outputArea = new JTextArea();
+        outputArea.setEditable(false);
+        add(new JScrollPane(outputArea), BorderLayout.CENTER);
+
+        reserveButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                reserveRoom();
+            }
+        });
+    }
+
+    private void reserveRoom() {
+        String guestName = nameField.getText().trim();
+        if (guestName.isEmpty()) {
+            JOptionPane.showMessageDialog(this, "⚠️ Please enter your name!", "Warning", JOptionPane.WARNING_MESSAGE);
             return;
         }
 
-        System.out.print("How many nights will you stay? ");
-        int nights = scanner.nextInt();
-        scanner.nextLine();
+        int selectedIndex = roomComboBox.getSelectedIndex();
+        Room selectedRoom = rooms[selectedIndex];
+
+        int nights;
+        try {
+            nights = Integer.parseInt(nightsField.getText().trim());
+            if (nights <= 0) {
+                throw new NumberFormatException();
+            }
+        } catch (NumberFormatException ex) {
+            JOptionPane.showMessageDialog(this, "⚠️ Please enter a valid number of nights!", "Warning", JOptionPane.WARNING_MESSAGE);
+            return;
+        }
 
         double totalPrice = selectedRoom.getPricePerNight() * nights;
 
         StringBuilder reservationDetails = new StringBuilder();
-        reservationDetails.append("\n[Room Rating]\n");
+        reservationDetails.append("\n[Room Reservation]\n");
         reservationDetails.append("Guest Name: ").append(guestName).append("\n");
         reservationDetails.append("Room Number: ").append(selectedRoom.getRoomNumber()).append("\n");
         reservationDetails.append("Room Capacity: ").append(selectedRoom.getCapacity()).append(" beds\n");
@@ -70,26 +127,6 @@ public class RoomRateManager {
 
         fileManager.AppendRow(reservationDetails.toString());
 
-        System.out.println("✅ Reservation completed successfully!");
-        System.out.println("💰 Total price: " + totalPrice + " Toman");
-    }
-
-    public void listAllRooms() {
-        System.out.println("📋 Available Rooms:");
-        for (int i = 0; i < rooms.length; i++) {
-            Room room = rooms[i];
-            System.out.println("Room Number: " + room.getRoomNumber() +
-                    " | Capacity: " + room.getCapacity() + " beds" +
-                    " | Price/Night: " + room.getPricePerNight() + " Toman");
-        }
-    }
-
-    private Room getRoomByNumber(int number) {
-        for (int i = 0; i < rooms.length; i++) {
-            if (rooms[i].getRoomNumber() == number) {
-                return rooms[i];
-            }
-        }
-        return null;
+        outputArea.setText("✅ Reservation Successful!\n\n" + reservationDetails.toString());
     }
 }
