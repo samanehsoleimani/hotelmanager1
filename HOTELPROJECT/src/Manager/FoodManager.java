@@ -156,17 +156,17 @@ public class FoodManager {
     private void updateFoodComboBox(String mealType, JComboBox<String> foodComboBox) {
         // غذاهای مربوط به نوع وعده غذایی انتخاب شده رو فیلتر می‌کنیم
         foodComboBox.removeAllItems();
-        for (Food food : foods) {
-            if (food.getMealType().equalsIgnoreCase(mealType)) {
-                foodComboBox.addItem(food.getFoodName());
+        for (int i = 0; i < foods.length; i++) {
+            if (foods[i].getMealType().equalsIgnoreCase(mealType)) {
+                foodComboBox.addItem(foods[i].getFoodName());
             }
         }
     }
 
     private double getFoodPrice(String foodName) {
-        for (Food food : foods) {
-            if (food.getFoodName().equalsIgnoreCase(foodName)) {
-                return food.getFoodPrice();
+        for (int i = 0; i < foods.length; i++) {
+            if (foods[i].getFoodName().equalsIgnoreCase(foodName)) {
+                return foods[i].getFoodPrice();
             }
         }
         return 0;
