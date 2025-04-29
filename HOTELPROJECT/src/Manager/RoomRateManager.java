@@ -8,7 +8,7 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
-public class RoomRateManager extends JFrame {
+public class RoomRateManager {
     private Room[] rooms;
     private txtfilemanager fileManager;
 
@@ -18,13 +18,9 @@ public class RoomRateManager extends JFrame {
     private JButton reserveButton;
     private JTextArea outputArea;
 
-    public RoomRateManager() {
-        setTitle("🏨 Room Booking");
-        setSize(500, 500);
-        setLocationRelativeTo(null);
-        setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-        setLayout(new BorderLayout());
+    private JPanel mainPanel; // 🌟 اضافه شد
 
+    public RoomRateManager() {
         fileManager = new txtfilemanager("ROOMRATE.txt");
 
         rooms = new Room[]{
@@ -50,10 +46,12 @@ public class RoomRateManager extends JFrame {
                 new Room(503, 5, 6000000)
         };
 
-        initComponents();
+        initComponents(); // 🌟 فقط ایجاد کامپوننت‌ها
     }
 
     private void initComponents() {
+        mainPanel = new JPanel(new BorderLayout()); // 🌟 به‌جای JFrame
+
         JPanel inputPanel = new JPanel(new GridLayout(4, 2, 10, 10));
 
         JLabel nameLabel = new JLabel("👤 Guest Name:");
@@ -79,11 +77,11 @@ public class RoomRateManager extends JFrame {
         inputPanel.add(new JLabel()); // خالی برای زیبایی
         inputPanel.add(reserveButton);
 
-        add(inputPanel, BorderLayout.NORTH);
+        mainPanel.add(inputPanel, BorderLayout.NORTH);
 
         outputArea = new JTextArea();
         outputArea.setEditable(false);
-        add(new JScrollPane(outputArea), BorderLayout.CENTER);
+        mainPanel.add(new JScrollPane(outputArea), BorderLayout.CENTER);
 
         reserveButton.addActionListener(new ActionListener() {
             @Override
@@ -93,10 +91,14 @@ public class RoomRateManager extends JFrame {
         });
     }
 
+    public JPanel getPanel() {
+        return mainPanel;
+    }
+
     private void reserveRoom() {
         String guestName = nameField.getText().trim();
         if (guestName.isEmpty()) {
-            JOptionPane.showMessageDialog(this, "⚠️ Please enter your name!", "Warning", JOptionPane.WARNING_MESSAGE);
+            JOptionPane.showMessageDialog(mainPanel, "⚠️ Please enter your name!", "Warning", JOptionPane.WARNING_MESSAGE);
             return;
         }
 
@@ -110,7 +112,7 @@ public class RoomRateManager extends JFrame {
                 throw new NumberFormatException();
             }
         } catch (NumberFormatException ex) {
-            JOptionPane.showMessageDialog(this, "⚠️ Please enter a valid number of nights!", "Warning", JOptionPane.WARNING_MESSAGE);
+            JOptionPane.showMessageDialog(mainPanel, "⚠️ Please enter a valid number of nights!", "Warning", JOptionPane.WARNING_MESSAGE);
             return;
         }
 
