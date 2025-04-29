@@ -1,0 +1,9 @@
+
+[Food Service]
+Guest Name: zahra
+Room Number: 
+Breakfast foods:  - Total Price: 0.0 Toman
+Lunch foods: Halim - Total Price: 0.0 Toman
+Dinner foods:  - Total Price: 0.0 Toman
+Water: Added
+Total Price: 2000.0 Toman
