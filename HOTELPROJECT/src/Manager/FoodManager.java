@@ -4,7 +4,6 @@ import Common.Food;
 import txtFileManager.txtfilemanager;
 
 import javax.swing.*;
-import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
@@ -12,6 +11,7 @@ public class FoodManager {
 
     private Food[] foods;
     private txtfilemanager fileManager;
+    private JPanel foodPanel; // پنل اصلی
 
     public FoodManager() {
         foods = new Food[]{
@@ -49,50 +49,46 @@ public class FoodManager {
                 new Food("Kofteh Tabrizi", 150000, "Dinner")
         };
         fileManager = new txtfilemanager("FOOD.txt");
+        buildPanel(); // ساختن پنل هنگام سازنده
     }
 
-    public void startFoodService() {
-        JFrame foodFrame = new JFrame("🍽️ Food Service");
-        foodFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-        foodFrame.setSize(500, 400);
-        foodFrame.setLayout(null);
+    private void buildPanel() {
+        foodPanel = new JPanel();
+        foodPanel.setLayout(null);
 
         JLabel nameLabel = new JLabel("Guest Name:");
         nameLabel.setBounds(30, 20, 100, 30);
-        foodFrame.add(nameLabel);
+        foodPanel.add(nameLabel);
 
         JTextField nameField = new JTextField();
         nameField.setBounds(140, 20, 300, 30);
-        foodFrame.add(nameField);
+        foodPanel.add(nameField);
 
         JLabel roomLabel = new JLabel("Room Number:");
         roomLabel.setBounds(30, 60, 100, 30);
-        foodFrame.add(roomLabel);
+        foodPanel.add(roomLabel);
 
         JTextField roomField = new JTextField();
         roomField.setBounds(140, 60, 300, 30);
-        foodFrame.add(roomField);
+        foodPanel.add(roomField);
 
         JLabel mealTypeLabel = new JLabel("Select Meal Type:");
         mealTypeLabel.setBounds(30, 100, 100, 30);
-        foodFrame.add(mealTypeLabel);
+        foodPanel.add(mealTypeLabel);
 
-        // JComboBox برای انتخاب نوع وعده (صبحانه، نهار، شام)
         String[] mealTypes = {"Breakfast", "Lunch", "Dinner"};
         JComboBox<String> mealTypeComboBox = new JComboBox<>(mealTypes);
         mealTypeComboBox.setBounds(140, 100, 300, 30);
-        foodFrame.add(mealTypeComboBox);
+        foodPanel.add(mealTypeComboBox);
 
         JLabel foodLabel = new JLabel("Select Food:");
         foodLabel.setBounds(30, 140, 100, 30);
-        foodFrame.add(foodLabel);
+        foodPanel.add(foodLabel);
 
-        // JComboBox برای انتخاب غذا
         JComboBox<String> foodComboBox = new JComboBox<>();
         foodComboBox.setBounds(140, 140, 300, 30);
-        foodFrame.add(foodComboBox);
+        foodPanel.add(foodComboBox);
 
-        // وقتی نوع وعده غذایی تغییر می‌کنه، غذاها رو فیلتر کنیم
         mealTypeComboBox.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -101,24 +97,23 @@ public class FoodManager {
             }
         });
 
-        // دکمه برای ارسال سفارش
         JButton submitButton = new JButton("Submit Order");
-        submitButton.setBounds(140, 250, 150, 40);
-        foodFrame.add(submitButton);
+        submitButton.setBounds(140, 190, 150, 40);
+        foodPanel.add(submitButton);
 
         JTextArea resultArea = new JTextArea();
-        resultArea.setBounds(30, 300, 410, 50);
+        resultArea.setBounds(30, 250, 410, 100);
         resultArea.setEditable(false);
-        foodFrame.add(resultArea);
+        foodPanel.add(resultArea);
 
         submitButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 String guestName = nameField.getText().trim();
                 String roomNumber = roomField.getText().trim();
-                String selectedFood = (String) foodComboBox.getSelectedItem(); // غذا انتخاب شده
+                String selectedFood = (String) foodComboBox.getSelectedItem();
 
                 if (guestName.isEmpty() || roomNumber.isEmpty() || selectedFood == null) {
-                    JOptionPane.showMessageDialog(foodFrame, "Please fill all fields and select a food.");
+                    JOptionPane.showMessageDialog(foodPanel, "Please fill all fields and select a food.");
                     return;
                 }
 
@@ -129,8 +124,7 @@ public class FoodManager {
                 orderDetails.append("Room Number: ").append(roomNumber).append("\n");
                 orderDetails.append("Selected Food: ").append(selectedFood).append("\n");
 
-                // اضافه کردن آب
-                int waterOption = JOptionPane.showConfirmDialog(foodFrame, "Would you like water? (+2000 Toman)", "Water", JOptionPane.YES_NO_OPTION);
+                int waterOption = JOptionPane.showConfirmDialog(foodPanel, "Would you like water? (+2000 Toman)", "Water", JOptionPane.YES_NO_OPTION);
                 if (waterOption == JOptionPane.YES_OPTION) {
                     totalPrice += 2000;
                     orderDetails.append("Water: Added\n");
@@ -139,36 +133,35 @@ public class FoodManager {
                 orderDetails.append("Total Price: ").append(totalPrice).append(" Toman\n");
 
                 resultArea.setText(orderDetails.toString());
-
                 fileManager.AppendRow(orderDetails.toString());
 
-                JOptionPane.showMessageDialog(foodFrame, "Order saved successfully!");
+                JOptionPane.showMessageDialog(foodPanel, "Order saved successfully!");
             }
         });
 
-        foodFrame.setLocationRelativeTo(null);
-        foodFrame.setVisible(true);
-
-        // به طور پیش‌فرض، غذاهای صبحانه رو بارگذاری کنیم
         updateFoodComboBox("Breakfast", foodComboBox);
     }
 
     private void updateFoodComboBox(String mealType, JComboBox<String> foodComboBox) {
-        // غذاهای مربوط به نوع وعده غذایی انتخاب شده رو فیلتر می‌کنیم
         foodComboBox.removeAllItems();
-        for (int i = 0; i < foods.length; i++) {
-            if (foods[i].getMealType().equalsIgnoreCase(mealType)) {
-                foodComboBox.addItem(foods[i].getFoodName());
+        for (Food food : foods) {
+            if (food.getMealType().equalsIgnoreCase(mealType)) {
+                foodComboBox.addItem(food.getFoodName());
             }
         }
     }
 
     private double getFoodPrice(String foodName) {
-        for (int i = 0; i < foods.length; i++) {
-            if (foods[i].getFoodName().equalsIgnoreCase(foodName)) {
-                return foods[i].getFoodPrice();
+        for (Food food : foods) {
+            if (food.getFoodName().equalsIgnoreCase(foodName)) {
+                return food.getFoodPrice();
             }
         }
         return 0;
+    }
+
+    // 📌 متد مورد نیاز myMainSwing برای دریافت پنل
+    public JPanel getPanel() {
+        return foodPanel;
     }
 }
