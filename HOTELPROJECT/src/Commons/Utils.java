@@ -8,7 +8,7 @@ public class Utils {
         return NumberFormat.getNumberInstance(Locale.US).format(price) + " تومان";
     }
 
-    public static String padRight(String s, int n) {
-        return String.format("%-" + n + "s", s);
+    public static String alignText(String text, int length) {
+        return String.format("%-" + length + "s", text);
     }
 }
