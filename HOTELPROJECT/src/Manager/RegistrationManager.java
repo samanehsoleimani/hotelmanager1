@@ -92,3 +92,4 @@ public class RegistrationManager {
         return nationalId != null && nationalId.matches("\\d{10}");
     }
 }
+//
