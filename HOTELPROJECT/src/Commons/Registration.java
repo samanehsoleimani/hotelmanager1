@@ -40,3 +40,4 @@ public class Registration implements Serializable {
                 "\nتاریخ ثبت‌نام: " + registrationDate;
     }
 }
+//
