@@ -71,3 +71,4 @@ public class MainMaryam {
         System.out.println("└─ مبلغ قابل پرداخت: " + Utils.formatPrice(finalPrice));
     }
 }
+//
