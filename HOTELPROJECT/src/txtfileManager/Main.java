@@ -450,6 +450,465 @@ public class Main extends JFrame {
 
         return panel;
     }
+    
+private JPanel createEmployeePanel() {
+    JPanel panel = new JPanel(new BorderLayout(10, 10));
+    panel.setBorder(BorderFactory.createTitledBorder("👨‍💼 مدیریت کارمندان"));
+
+    JPanel formPanel = new JPanel(new GridLayout(6, 2, 10, 10));
+    formPanel.setBorder(BorderFactory.createEmptyBorder(15, 15, 10, 15));
+
+    JTextField firstName = new JTextField();
+    JTextField lastName = new JTextField();
+    JTextField nationalId = new JTextField();
+    JTextField position = new JTextField();
+    JTextField baseSalary = new JTextField();
+    JTextField experience = new JTextField();
+
+    formPanel.add(new JLabel("👤 نام:"));
+    formPanel.add(firstName);
+    formPanel.add(new JLabel("👥 نام خانوادگی:"));
+    formPanel.add(lastName);
+    formPanel.add(new JLabel("🆔 کد ملی:"));
+    formPanel.add(nationalId);
+    formPanel.add(new JLabel("🏢 سمت:"));
+    formPanel.add(position);
+    formPanel.add(new JLabel("💵 حقوق پایه:"));
+    formPanel.add(baseSalary);
+    formPanel.add(new JLabel("📅 سابقه (سال):"));
+    formPanel.add(experience);
+
+    JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 15, 5));
+    JButton addEmployee = new JButton("➕ ثبت کارمند");
+    JButton showEmployees = new JButton("📄 نمایش کارمندان");
+    buttonPanel.add(addEmployee);
+    buttonPanel.add(showEmployees);
+
+    JTextArea output = new JTextArea(10, 40);
+    output.setEditable(false);
+    output.setFont(new Font("Monospaced", Font.PLAIN, 13));
+    output.setMargin(new Insets(10, 10, 10, 10));
+    JScrollPane scrollPane = new JScrollPane(output);
+    scrollPane.setBorder(BorderFactory.createTitledBorder("📋 اطلاعات کارمندان"));
+
+    // لیست کارمندان محلی
+    java.util.List<Employee> employeeList = new java.util.ArrayList<>();
+
+    addEmployee.addActionListener(e -> {
+      try {
+        Employee emp = new Employee(firstName.getText().trim(), lastName.getText().trim(),
+            nationalId.getText().trim(), position.getText().trim(),
+            Double.parseDouble(baseSalary.getText().trim()), Integer.parseInt(experience.getText().trim()));
+        employeeList.add(emp);
+        JOptionPane.showMessageDialog(panel, "✅ کارمند با موفقیت ثبت شد");
+
+        // پاک کردن فیلدها
+        firstName.setText("");
+        lastName.setText("");
+        nationalId.setText("");
+        position.setText("");
+        baseSalary.setText("");
+        experience.setText("");
+      } catch (NumberFormatException ex) {
+        JOptionPane.showMessageDialog(panel, "⚠️ لطفاً اطلاعات عددی را صحیح وارد کنید", "خطا",
+            JOptionPane.ERROR_MESSAGE);
+      }
+    });
+
+    showEmployees.addActionListener(e -> {
+      output.setText("");
+      for (Employee emp : employeeList) {
+        output.append(emp.getFullInfo());
+        output.append("\n\n");
+      }
+    });
+
+    panel.add(formPanel, BorderLayout.NORTH);
+    panel.add(buttonPanel, BorderLayout.CENTER);
+    panel.add(scrollPane, BorderLayout.SOUTH);
+
+    return panel;
+  }
+  private JPanel createProductPanel() {
+    JPanel panel = new JPanel(new BorderLayout(10, 10));
+    panel.setBorder(BorderFactory.createTitledBorder("📦 مدیریت کالاها"));
+
+    JPanel formPanel = new JPanel(new GridLayout(4, 2, 10, 10));
+    formPanel.setBorder(BorderFactory.createEmptyBorder(15, 15, 10, 15));
+
+    JTextField nameField = new JTextField();
+    JTextField featuresField = new JTextField();
+    JTextField monthsField = new JTextField();
+    JTextField quantityField = new JTextField();
+
+    formPanel.add(new JLabel("🛍 نام کالا:"));
+    formPanel.add(nameField);
+    formPanel.add(new JLabel("📑 ویژگی‌ها:"));
+    formPanel.add(featuresField);
+    formPanel.add(new JLabel("📆 مدت موجودی (ماه):"));
+    formPanel.add(monthsField);
+    formPanel.add(new JLabel("🔢 تعداد:"));
+    formPanel.add(quantityField);
+
+JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 10, 5));
+    JButton addProduct = new JButton("➕ افزودن کالا");
+    JButton showProducts = new JButton("📄 نمایش کالاها");
+    JButton updateQuantity = new JButton("🔄 به‌روزرسانی تعداد");
+    buttonPanel.add(addProduct);
+    buttonPanel.add(showProducts);
+    buttonPanel.add(updateQuantity);
+
+    JTextArea output = new JTextArea(10, 40);
+    output.setEditable(false);
+    output.setFont(new Font("Monospaced", Font.PLAIN, 13));
+    output.setMargin(new Insets(10, 10, 10, 10));
+    JScrollPane scrollPane = new JScrollPane(output);
+    scrollPane.setBorder(BorderFactory.createTitledBorder("📋 اطلاعات کالاها"));
+
+    // لیست محلی برای محصولات
+    List<Product> productList = new ArrayList<>(InventoryManager.getProductList());
+
+    addProduct.addActionListener(e -> {
+      try {
+        String name = nameField.getText().trim();
+        String features = featuresField.getText().trim();
+        int months = Integer.parseInt(monthsField.getText().trim());
+        int quantity = Integer.parseInt(quantityField.getText().trim());
+
+        Product product = new Product(name, features, months, quantity);
+        productList.add(product);
+        InventoryManager.addProductToList(product);
+        JOptionPane.showMessageDialog(panel, "✅ کالا با موفقیت ثبت شد");
+
+        nameField.setText("");
+        featuresField.setText("");
+        monthsField.setText("");
+        quantityField.setText("");
+      } catch (NumberFormatException ex) {
+        JOptionPane.showMessageDialog(panel, "⚠️ لطفاً اعداد را به درستی وارد کنید", "خطا",
+            JOptionPane.ERROR_MESSAGE);
+      } catch (IllegalArgumentException ex) {
+        JOptionPane.showMessageDialog(panel, "⚠️ " + ex.getMessage(), "خطا", JOptionPane.ERROR_MESSAGE);
+      }
+    });
+
+    showProducts.addActionListener(e -> {
+      productList.clear();
+      productList.addAll(InventoryManager.getProductList());
+      output.setText("");
+      for (Product p : productList) {
+        output.append(p.getProductInfo());
+        output.append("\n\n");
+      }
+    });
+
+    updateQuantity.addActionListener(e -> {
+      String name = JOptionPane.showInputDialog(panel, "نام کالا برای به‌روزرسانی:");
+      if (name == null || name.trim().isEmpty()) {
+        JOptionPane.showMessageDialog(panel, "⚠️ نام کالا نمی‌تواند خالی باشد");
+        return;
+      }
+
+      Product found = null;
+      for (Product p : InventoryManager.getProductList()) {
+        if (p.getName().equalsIgnoreCase(name.trim())) {
+          found = p;
+          break;
+        }
+      }
+
+      if (found == null) {
+        JOptionPane.showMessageDialog(panel, "⛔️ کالایی با این نام یافت نشد.");
+        return;
+      }
+
+      String quantityStr = JOptionPane.showInputDialog(panel, "تعداد جدید:");
+      try {
+        int newQuantity = Integer.parseInt(quantityStr.trim());
+        if (newQuantity < 0) throw new NumberFormatException();
+        found.setQuantity(newQuantity);
+        InventoryManager.saveProducts();
+        JOptionPane.showMessageDialog(panel, "✅ تعداد کالا به‌روزرسانی شد.");
+      } catch (NumberFormatException ex) {
+        JOptionPane.showMessageDialog(panel, "⚠️ لطفاً یک عدد معتبر وارد کنید", "خطا", JOptionPane.ERROR_MESSAGE);
+      }
+    });
+
+    panel.add(formPanel, BorderLayout.NORTH);
+    panel.add(buttonPanel, BorderLayout.CENTER);
+    panel.add(scrollPane, BorderLayout.SOUTH);
+
+    return panel;
+  }
+    private List<Constants.Registration> loadRegistrations() {
+        try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream("registrations.dat"))) {
+            return (List<Constants.Registration>) ois.readObject();
+        } catch (Exception e) {
+            return new ArrayList<>();
+        }
+    }
+
+    private void saveRegistrations(List<Constants.Registration> list) {
+        try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream("registrations.dat"))) {
+            oos.writeObject(list);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+private JPanel createRegistrationPanel() {
+      JPanel panel = new JPanel(new BorderLayout(10, 10));
+      panel.setBorder(BorderFactory.createTitledBorder("📝 ثبت‌نام در دوره آموزشی"));
+
+      JPanel formPanel = new JPanel(new GridLayout(4, 2, 10, 10));
+      formPanel.setBorder(BorderFactory.createEmptyBorder(15, 15, 10, 15));
+
+      JTextField nameField = new JTextField();
+      JTextField nationalIdField = new JTextField();
+      JTextField phoneField = new JTextField();
+
+      JComboBox<String> courseCombo = new JComboBox<>();
+      for (int i = 0; i < Constants.COURSES.length; i++) {
+          for (int j = 0; j < Constants.COURSES[i].length; j++) {
+              String[] course = Constants.COURSES[i][j];
+              courseCombo.addItem(String.format("%s | %s | %s (%s تومان)",
+                      course[0], course[2], course[3],
+                      Constants.formatPrice(Integer.parseInt(course[1]))));
+          }
+      }
+
+      formPanel.add(new JLabel("👤 نام و نام خانوادگی:"));
+      formPanel.add(nameField);
+      formPanel.add(new JLabel("🆔 کد ملی (10 رقم):"));
+      formPanel.add(nationalIdField);
+      formPanel.add(new JLabel("📞 شماره تماس:"));
+      formPanel.add(phoneField);
+      formPanel.add(new JLabel("📚 انتخاب دوره:"));
+      formPanel.add(courseCombo);
+
+      JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 10, 5));
+      JButton registerBtn = new JButton("➕ ثبت‌نام");
+      JButton showAllBtn = new JButton("📋 نمایش ثبت‌نام‌ها");
+      buttonPanel.add(registerBtn);
+      buttonPanel.add(showAllBtn);
+
+      JTextArea output = new JTextArea(10, 40);
+      output.setEditable(false);
+      output.setFont(new Font("Monospaced", Font.PLAIN, 13));
+      output.setMargin(new Insets(10, 10, 10, 10));
+      JScrollPane scrollPane = new JScrollPane(output);
+      scrollPane.setBorder(BorderFactory.createTitledBorder("🗂 اطلاعات ثبت‌نام‌ها"));
+
+      List<Constants.Registration> registrationList = new ArrayList<>(loadRegistrations());
+
+      registerBtn.addActionListener(e -> {
+          String fullName = nameField.getText().trim();
+          String nationalId = nationalIdField.getText().trim();
+          String phone = phoneField.getText().trim();
+          int selectedIndex = courseCombo.getSelectedIndex();
+
+          if (!nationalId.matches("\\d{10}")) {
+              JOptionPane.showMessageDialog(panel, "⚠️ کد ملی نامعتبر است!", "خطا", JOptionPane.ERROR_MESSAGE);
+              return;
+          }
+
+          int group = selectedIndex / 4;
+          int index = selectedIndex % 4;
+          String[] course = Constants.COURSES[group][index];
+
+          Constants.Registration reg = new Constants.Registration(
+                  fullName, nationalId, phone,
+                  course[0], Integer.parseInt(course[1]), course[2], course[3]
+          );
+          registrationList.add(reg);
+          saveRegistrations(registrationList);
+          JOptionPane.showMessageDialog(panel, "✅ ثبت‌نام با موفقیت انجام شد.");
+
+          nameField.setText("");
+          nationalIdField.setText("");
+          phoneField.setText("");
+      });
+
+      showAllBtn.addActionListener(e -> {
+          registrationList.clear();
+          registrationList.addAll(loadRegistrations());
+          output.setText("");
+          for (Constants.Registration r : registrationList) {
+              output.append(r.getRegistrationInfo() + "\n\n");
+          }
+      });
+
+      panel.add(formPanel, BorderLayout.NORTH);
+      panel.add(buttonPanel, BorderLayout.CENTER);
+      panel.add(scrollPane, BorderLayout.SOUTH);
+
+      return panel;
+  }
+
+  private JPanel createPayrollPanel() {
+      JPanel panel = new JPanel(new BorderLayout(10, 10));
+      panel.setBorder(BorderFactory.createTitledBorder("📄 صدور فیش حقوقی"));
+
+      // فرم ورود اطلاعات
+      JPanel formPanel = new JPanel(new GridLayout(8, 2, 10, 10));
+      formPanel.setBorder(BorderFactory.createEmptyBorder(15, 15, 10, 15));
+
+JTextField nameField = new JTextField();
+      JTextField jobField = new JTextField();
+      JTextField dateField = new JTextField();
+      JTextField baseSalaryField = new JTextField();
+      JTextField hoursWorkedField = new JTextField();
+      JTextField bonusField = new JTextField();
+      JTextField deductionField = new JTextField();
+      JTextField cardNumberField = new JTextField();
+      JComboBox<String> paymentBox = new JComboBox<>(new String[] { "واریز به حساب بانکی", "پرداخت نقدی" });
+
+      formPanel.add(new JLabel("👤 نام کارمند:"));
+      formPanel.add(nameField);
+      formPanel.add(new JLabel("🔧 شغل:"));
+      formPanel.add(jobField);
+      formPanel.add(new JLabel("📅 تاریخ:"));
+      formPanel.add(dateField);
+      formPanel.add(new JLabel("💰 حقوق پایه:"));
+      formPanel.add(baseSalaryField);
+      formPanel.add(new JLabel("⏱️ ساعات کاری:"));
+      formPanel.add(hoursWorkedField);
+      formPanel.add(new JLabel("🎁 پاداش:"));
+      formPanel.add(bonusField);
+      formPanel.add(new JLabel("📉 کسری:"));
+      formPanel.add(deductionField);
+      formPanel.add(new JLabel("💳 روش پرداخت:"));
+      formPanel.add(paymentBox);
+      formPanel.add(new JLabel("🔢 شماره کارت (در صورت نیاز):"));
+      formPanel.add(cardNumberField);
+
+      // خروجی و دکمه‌ها
+      JTextArea outputArea = new JTextArea(12, 30);
+      outputArea.setEditable(false);
+      outputArea.setFont(new Font("Monospaced", Font.PLAIN, 13));
+      JScrollPane scrollPane = new JScrollPane(outputArea);
+      scrollPane.setBorder(BorderFactory.createTitledBorder("📑 فیش حقوقی"));
+
+      JButton generateButton = new JButton("📤 صدور فیش");
+
+      generateButton.addActionListener(e -> {
+          try {
+              EmployeePayroll payroll = new EmployeePayroll(
+                      nameField.getText().trim(),
+                      jobField.getText().trim(),
+                      dateField.getText().trim(),
+                      Double.parseDouble(baseSalaryField.getText().trim())
+              );
+
+              payroll.calculateSalary(Integer.parseInt(hoursWorkedField.getText().trim()));
+              payroll.setBonus(Double.parseDouble(bonusField.getText().trim()));
+              payroll.setDeductions(Double.parseDouble(deductionField.getText().trim()));
+
+              String method = paymentBox.getSelectedIndex() == 0 ? "1" : "2";
+              String card = cardNumberField.getText().trim();
+              payroll.setPaymentMethod(method, card);
+
+              // چاپ فیش در خروجی
+              outputArea.setText("");
+              NumberFormat nf = NumberFormat.getInstance(new Locale("fa", "IR"));
+              outputArea.append("نام: " + payroll.employeeName + "\n");
+              outputArea.append("شغل: " + payroll.jobTitle + "\n");
+              outputArea.append("تاریخ: " + payroll.date + "\n\n");
+              outputArea.append("حقوق پایه: " + nf.format(payroll.baseSalary) + " ریال\n");
+              outputArea.append("اضافه‌کار: " + nf.format(payroll.overtime) + " ریال\n");
+              outputArea.append("پاداش: " + nf.format(payroll.bonus) + " ریال\n");
+              outputArea.append("کسری: " + nf.format(payroll.deductions) + " ریال\n");
+              outputArea.append("-----------------------------\n");
+              outputArea.append("حقوق خالص: " + nf.format(payroll.calculateNetSalary()) + " ریال\n\n");
+              outputArea.append("روش پرداخت: " + (method.equals("1") ? "واریز به حساب بانکی" : "پرداخت نقدی") + "\n");
+              if (method.equals("1")) {
+                  outputArea.append("شماره کارت: " + card.replaceAll("(\\d{4})(?=\\d)", "$1-") + "\n");
+              }
+          } catch (NumberFormatException ex) {
+              JOptionPane.showMessageDialog(panel, "⚠️ لطفاً مقادیر عددی را صحیح وارد کنید", "خطا", JOptionPane.ERROR_MESSAGE);
+          } catch (Exception ex) {
+              JOptionPane.showMessageDialog(panel, "⚠️ خطا: " + ex.getMessage(), "خطا", JOptionPane.ERROR_MESSAGE);
+          }
+      });
+
+
+// افزودن به پنل
+      JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
+      buttonPanel.add(generateButton);
+
+      panel.add(formPanel, BorderLayout.NORTH);
+      panel.add(buttonPanel, BorderLayout.CENTER);
+      panel.add(scrollPane, BorderLayout.SOUTH);
+
+      return panel;
+  }
+  private JPanel createConferencePanel() {
+      JPanel panel = new JPanel(new BorderLayout(10, 10));
+      panel.setBorder(BorderFactory.createTitledBorder("📅 ایجاد رویداد کنفرانس"));
+
+      JPanel formPanel = new JPanel(new GridLayout(6, 2, 10, 10));
+      formPanel.setBorder(BorderFactory.createEmptyBorder(15, 15, 10, 15));
+
+      JTextField eventIdField = new JTextField();
+      JComboBox<EventType> eventTypeBox = new JComboBox<>(EventType.values());
+      JTextField dateField = new JTextField();
+      JTextField startTimeField = new JTextField();
+      JTextField endTimeField = new JTextField();
+      JTextField attendeesField = new JTextField();
+
+      formPanel.add(new JLabel("🆔 کد رویداد:"));
+      formPanel.add(eventIdField);
+      formPanel.add(new JLabel("🏷 نوع رویداد:"));
+      formPanel.add(eventTypeBox);
+      formPanel.add(new JLabel("📅 تاریخ:"));
+      formPanel.add(dateField);
+      formPanel.add(new JLabel("⏰ ساعت شروع:"));
+      formPanel.add(startTimeField);
+      formPanel.add(new JLabel("⏰ ساعت پایان:"));
+      formPanel.add(endTimeField);
+      formPanel.add(new JLabel("👥 تعداد شرکت‌کنندگان:"));
+      formPanel.add(attendeesField);
+
+      JTextArea outputArea = new JTextArea(10, 30);
+      outputArea.setEditable(false);
+      outputArea.setFont(new Font("Monospaced", Font.PLAIN, 13));
+      JScrollPane scrollPane = new JScrollPane(outputArea);
+      scrollPane.setBorder(BorderFactory.createTitledBorder("📌 اطلاعات رویداد"));
+
+      JButton createButton = new JButton("📤 ایجاد رویداد");
+
+      createButton.addActionListener(e -> {
+          try {
+              String eventId = eventIdField.getText().trim();
+              EventType type = (EventType) eventTypeBox.getSelectedItem();
+              String date = dateField.getText().trim();
+              String start = startTimeField.getText().trim();
+              String end = endTimeField.getText().trim();
+              int attendees = Integer.parseInt(attendeesField.getText().trim());
+
+              ConferenceRoom room = new ConferenceRoom("R1", "سالن A", 100); // موقتی
+              ConferenceEvent event = new ConferenceEvent(eventId, type, date, start, end, room, attendees);
+              boolean reserved = event.reserve();
+
+              if (reserved) {
+                  outputArea.setText(event.toFileString());
+              } else {
+                  outputArea.setText("⚠️ امکان رزرو سالن نیست.");
+              }
+          } catch (Exception ex) {
+              JOptionPane.showMessageDialog(panel, "⚠️ خطا: " + ex.getMessage(), "خطا", JOptionPane.ERROR_MESSAGE);
+          }
+      });
+
+      JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
+      buttonPanel.add(createButton);
+
+      panel.add(formPanel, BorderLayout.NORTH);
+      panel.add(buttonPanel, BorderLayout.CENTER);
+      panel.add(scrollPane, BorderLayout.SOUTH);
+
+      return panel;
+  }
 
     
     public static void main(String[] args) {
