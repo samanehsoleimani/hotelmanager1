@@ -36,6 +36,23 @@ public class Main extends JFrame {
 
         add(tabs);
     }
+    private static JPanel createRoomBooking() {
+          return  new RoomRateManager().getPanel();
+          }
+   
+   private static JPanel entertainmentPanel() {
+          return  new EntertainmentManager().getPanel();
+          }
+   private static JPanel connectionPanel() {
+          return  new ConnectionInfoManager().getPanel();
+          }
+   
+   private static JPanel createEmployees() {
+          return  new EmployeeManager().getPanel();
+          }
+   private static JPanel createFoodPanel() {
+          return new FoodManager().getPanel(); // متد getPanel() باید در FoodManager پیاده‌سازی شود
+      }
 
     private JPanel createGuestPanel() {
         JPanel panel = new JPanel(new BorderLayout(10, 10));
